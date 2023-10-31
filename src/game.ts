@@ -70,7 +70,6 @@ function changeGameStateDecorator(wrapped: Function) {
   return function (this: Game) {
     const board: Board = wrapped.call(this, ...arguments);
 
-    this.board = board;
     this.history.push(board);
 
     this.move = changeGameStateDecorator(makeMovePiece(board));
@@ -87,7 +86,10 @@ function makeGame(): Game {
   return {
     currentPlayer: { color: "red" },
     history: [board],
-    board: board,
+
+    get board() {
+      return this.history[this.history.length - 1];
+    },
 
     move: changeGameStateDecorator(makeMovePiece(board)),
     place: changeGameStateDecorator(makePlacePiece(board)),
