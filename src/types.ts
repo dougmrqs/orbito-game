@@ -1,5 +1,4 @@
 type Game = {
-  currentPlayer: Player;
   history: Board[];
   board: Board;
 

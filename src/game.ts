@@ -84,7 +84,6 @@ function makeGame(): Game {
   const board = makeBoard();
 
   return {
-    currentPlayer: { color: "red" },
     history: [board],
 
     get board() {
