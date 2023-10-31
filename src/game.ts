@@ -3,7 +3,7 @@ import { Board, Game, Orbit, Player, Space } from "./types";
 
 function makePlacePiece(board: Board) {
   return (player: Player, toSpace: Space): Board => {
-    const currentSpace = board.findSpace(toSpace.id);
+    const currentSpace = board.findSpaceById(toSpace.id);
 
     if (currentSpace.piece) {
       throw new Error("Space is occupied");
@@ -11,7 +11,7 @@ function makePlacePiece(board: Board) {
 
     const boardCopy = makeBoard(board.innerOrbit, board.outerOrbit);
 
-    const space = boardCopy.findSpace(toSpace.id);
+    const space = boardCopy.findSpaceById(toSpace.id);
 
     space.piece = { player };
 
@@ -21,8 +21,8 @@ function makePlacePiece(board: Board) {
 
 function makeMovePiece(board: Board) {
   return (fromSpace: Space, toSpace: Space): Board => {
-    const currentFromSpace = board.findSpace(fromSpace.id);
-    const currentToSpace = board.findSpace(toSpace.id);
+    const currentFromSpace = board.findSpaceById(fromSpace.id);
+    const currentToSpace = board.findSpaceById(toSpace.id);
 
     if (!currentFromSpace.piece) {
       throw new Error("Space is empty");
@@ -34,8 +34,8 @@ function makeMovePiece(board: Board) {
 
     const boardCopy = makeBoard(board.innerOrbit, board.outerOrbit);
 
-    const newFromSpace = boardCopy.findSpace(fromSpace.id);
-    const newToSpace = boardCopy.findSpace(toSpace.id);
+    const newFromSpace = boardCopy.findSpaceById(fromSpace.id);
+    const newToSpace = boardCopy.findSpaceById(toSpace.id);
 
     newFromSpace.piece = null;
     newToSpace.piece = currentFromSpace.piece;
@@ -44,26 +44,23 @@ function makeMovePiece(board: Board) {
   };
 }
 
-function orbit(orbit: Orbit): Orbit {
-  return orbit.map((space, index) => {
-    const nextSpace = orbit[index + 1] || orbit[0];
-
-    return {
-      ...space,
-      position: nextSpace.position,
-    };
-  });
-}
-
 function makeRunOrbit(board: Board) {
+  function orbit(orbit: Orbit): Orbit {
+    return orbit.map((space, index) => {
+      const nextSpace = orbit[index - 1] || orbit[orbit.length - 1];
+
+      return {
+        ...space,
+        position: nextSpace.position,
+      };
+    });
+  }
+
   return function (): Board {
     const { innerOrbit, outerOrbit } = board;
 
     const newInnerOrbit = orbit(innerOrbit);
     const newOuterOrbit = orbit(outerOrbit);
-
-    console.log("run orbit");
-    console.log(innerOrbit);
 
     return makeBoard(newInnerOrbit, newOuterOrbit);
   };

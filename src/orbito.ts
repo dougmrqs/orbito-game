@@ -12,7 +12,7 @@ type PlacePlay = {
 function moveOpponentsPiece(game: Game, play: MovePlay) {
   const currentPlayer = game.currentPlayer;
 
-  const currentSpace = game.board.findSpace(play.fromSpace.id);
+  const currentSpace = game.board.findSpaceById(play.fromSpace.id);
 
   if (!currentSpace.piece) {
     throw new Error("There is no piece in the space");

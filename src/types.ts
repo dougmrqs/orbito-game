@@ -12,7 +12,7 @@ type Board = {
   innerOrbit: Orbit;
   outerOrbit: Orbit;
 
-  findSpace: (id: number) => Space;
+  findSpaceById: (id: number) => Space;
 };
 
 type Player = {

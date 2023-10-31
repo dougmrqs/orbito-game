@@ -1,4 +1,3 @@
-import { makeBoard } from "../src/board";
 import { makeGame } from "../src/game";
 import { Player } from "../src/types";
 
@@ -27,7 +26,7 @@ describe("Game actions", () => {
       game.board.innerOrbit[0].piece = { player };
 
       expect(() => game.place(player, toSpace)).toThrowError(
-        "Space is occupied"
+        "Space is occupied",
       );
     });
   });
@@ -57,7 +56,7 @@ describe("Game actions", () => {
       const toSpace = game.board.innerOrbit[1];
 
       expect(() => game.move(fromSpace, toSpace)).toThrowError(
-        "Space is empty"
+        "Space is empty",
       );
     });
 
@@ -76,11 +75,17 @@ describe("Game actions", () => {
       const toSpace = game.board.innerOrbit[1];
 
       expect(() => game.move(fromSpace, toSpace)).toThrowError(
-        "Space is occupied"
+        "Space is occupied",
       );
     });
   });
 
+  // Being the initial inner orbit:
+  // 0, 3, or linearly: 0, 1, 2, 3
+  // 1, 2,
+  // Should become:
+  // 3, 2, or linearly: 3, 0, 1, 2
+  // 0, 1,
   describe("#orbit", () => {
     it("moves positions one step in the orbit", () => {
       const game = makeGame();
@@ -88,10 +93,10 @@ describe("Game actions", () => {
       const newBoard = game.orbit();
 
       expect(newBoard.innerOrbit.map((space) => space.position)).toEqual([
-        1, 2, 3, 0,
+        3, 0, 1, 2,
       ]);
       expect(newBoard.outerOrbit.map((space) => space.position)).toEqual([
-        1, 2, 3, 4, 5, 6, 7, 8, 9, 0,
+        11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
       ]);
     });
 
@@ -102,7 +107,7 @@ describe("Game actions", () => {
       const newBoard = game.orbit();
 
       expect(newBoard.outerOrbit.map((space) => space.position)).not.toEqual(
-        board.outerOrbit.map((space) => space.position)
+        board.outerOrbit.map((space) => space.position),
       );
     });
 
@@ -115,7 +120,7 @@ describe("Game actions", () => {
 
       game.orbit();
 
-      expect(game.board.innerOrbit[0].position).toEqual(1);
+      expect(game.board.innerOrbit[0].position).toEqual(3);
       expect(game.board.innerOrbit[0].piece).toEqual({ player });
     });
 
@@ -129,7 +134,7 @@ describe("Game actions", () => {
       game.orbit();
       game.orbit();
 
-      expect(game.board.innerOrbit[0].position).toEqual(3);
+      expect(game.board.innerOrbit[0].position).toEqual(1);
       expect(game.board.innerOrbit[0].piece).toEqual({ player });
     });
   });
