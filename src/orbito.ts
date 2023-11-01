@@ -10,6 +10,11 @@ type PlacePlay = {
   toSpace: Space;
 };
 
+type PlayResponse = {
+  nextToPlay?: Player;
+  winner?: Player;
+};
+
 class Orbito {
   game: Game;
   players: [Player, Player];
@@ -31,7 +36,7 @@ class Orbito {
     return this.game.board.findSpaceById(id);
   }
 
-  play(play: MovePlay | PlacePlay) {
+  play(play: MovePlay | PlacePlay): PlayResponse {
     if (this.gamePhase === 1) {
       if ("fromSpace" in play) {
         this.move(play);
@@ -40,37 +45,54 @@ class Orbito {
         this.place(play);
       }
     } else if (this.gamePhase === 2) {
+      if ("fromSpace" in play) {
+        return { nextToPlay: this.currentPlayer };
+      }
+
       this.place(play);
       this.gamePhase = 1;
     }
 
-    return;
+    // check if game is over
+    if (this.checkWinner()) {
+      return { winner: this.currentPlayer };
+    }
+
+    return { nextToPlay: this.currentPlayer };
   }
 
   presentBoard() {
     console.log(this.game.board.innerOrbit, this.game.board.outerOrbit);
   }
 
-  private move(play: MovePlay) {
-    try {
-      this.moveOpponentsPiece(play);
-    } catch (err) {
-      console.error(err);
-    }
-
-    return;
+  private checkWinner(): Player | null {
+    return null;
   }
 
-  private place(play: PlacePlay) {
+  private move(play: MovePlay): boolean {
+    try {
+      this.moveOpponentsPiece(play);
+
+      return true;
+    } catch (err) {
+      console.error(err);
+
+      return false;
+    }
+  }
+
+  private place(play: PlacePlay): boolean {
     try {
       this.placeCurrentPlayersPiece(play);
       this.nextPlayer();
       this.orbit();
+
+      return true;
     } catch (err) {
       console.error(err);
-    }
 
-    return;
+      return false;
+    }
   }
 
   private orbit() {
