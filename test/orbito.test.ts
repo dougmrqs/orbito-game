@@ -46,7 +46,7 @@ describe("Orbito Game", () => {
         });
       });
 
-      it.skip("does not allow to move other player's piece to a non-adjacent space", () => {
+      it("does not allow to move other player's piece to a non-adjacent space", () => {
         const orbito = new Orbito();
 
         // player 1 places a piece
@@ -58,22 +58,37 @@ describe("Orbito Game", () => {
         // 14 15 -> 13 14
         // 13 should not be able to move to 15
         const movePlaySpace = orbito.findSpaceById(15);
-        orbito.play({ fromSpace: firstPlaySpace, toSpace: movePlaySpace });
+        const response = orbito.play({
+          fromSpace: firstPlaySpace,
+          toSpace: movePlaySpace,
+        });
 
+        expect(response).toEqual({
+          fault: "You can only move to an adjacent space",
+          nextToPlay: orbito.players[1],
+        });
         expect(orbito.findSpaceById(firstPlaySpace.id).piece).toEqual({
           player: orbito.players[0],
         });
         expect(orbito.findSpaceById(movePlaySpace.id).piece).toEqual(null);
       });
 
-      it.skip("waits on players turn until it makes a valid move", () => {
+      it("waits on players turn until it makes a valid move", () => {
         const orbito = new Orbito();
 
         // player 1 tries to move a piece
         const fromSpace = orbito.findSpaceById(13);
         const toSpace = orbito.findSpaceById(14);
-        orbito.play({ fromSpace: fromSpace, toSpace: toSpace });
 
+        const response = orbito.play({
+          fromSpace: fromSpace,
+          toSpace: toSpace,
+        });
+
+        expect(response).toEqual({
+          nextToPlay: orbito.players[0],
+          fault: "There is no piece in the space",
+        });
         expect(orbito.currentPlayer).toEqual(orbito.players[0]);
       });
 
@@ -90,8 +105,15 @@ describe("Orbito Game", () => {
 
         // player 2 tries to move the piece again
         const secondMovePlaySpace = orbito.findSpaceById(15);
-        orbito.play({ fromSpace: movePlaySpace, toSpace: secondMovePlaySpace });
+        const response = orbito.play({
+          fromSpace: movePlaySpace,
+          toSpace: secondMovePlaySpace,
+        });
 
+        expect(response).toEqual({
+          fault: "You can't move a piece now",
+          nextToPlay: orbito.players[1],
+        });
         expect(orbito.currentPlayer).toEqual(orbito.players[1]);
         expect(orbito.findSpaceById(secondMovePlaySpace.id).piece).toEqual(
           null
