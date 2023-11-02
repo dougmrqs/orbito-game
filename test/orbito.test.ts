@@ -40,7 +40,7 @@ describe("Orbito Game", () => {
         orbito.play({ toSpace: secondPlaySpace });
 
         expect(
-          orbito.game.board.findSpaceById(secondPlaySpace.id).piece
+          orbito.game.board.findSpaceById(secondPlaySpace.id).piece,
         ).toEqual({
           player: orbito.players[1],
         });
@@ -116,7 +116,7 @@ describe("Orbito Game", () => {
         });
         expect(orbito.currentPlayer).toEqual(orbito.players[1]);
         expect(orbito.findSpaceById(secondMovePlaySpace.id).piece).toEqual(
-          null
+          null,
         );
       });
 
@@ -158,7 +158,7 @@ describe("Orbito Game", () => {
         orbito.play({ toSpace: secondPlaySpace });
 
         expect(
-          orbito.game.board.findSpaceById(secondPlaySpace.id).piece
+          orbito.game.board.findSpaceById(secondPlaySpace.id).piece,
         ).toEqual({
           player: orbito.players[1],
         });
