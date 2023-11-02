@@ -7,19 +7,20 @@ describe("Orbito Game", () => {
         const orbito = new Orbito();
 
         // player 1 places a piece
-        const firstPlaySpace = orbito.findSpaceById(13);
-        orbito.play({ toSpace: firstPlaySpace });
+        orbito.play({ toSpace: orbito.findSpaceById(13) });
 
-        expect(orbito.findSpaceById(firstPlaySpace.id).piece).toEqual({
+        expect(orbito.findSpaceById(14).piece).toEqual({
           player: orbito.players[0],
         });
 
         // player 2 moves the piece
-        const movePlaySpace = orbito.findSpaceById(14);
-        orbito.play({ fromSpace: firstPlaySpace, toSpace: movePlaySpace });
+        orbito.play({
+          fromSpace: orbito.findSpaceById(14),
+          toSpace: orbito.findSpaceById(15),
+        });
 
-        expect(orbito.findSpaceById(firstPlaySpace.id).piece).toEqual(null);
-        expect(orbito.findSpaceById(movePlaySpace.id).piece).toEqual({
+        expect(orbito.findSpaceById(14).piece).toEqual(null);
+        expect(orbito.findSpaceById(15).piece).toEqual({
           player: orbito.players[0],
         });
       });
@@ -28,20 +29,18 @@ describe("Orbito Game", () => {
         const orbito = new Orbito();
 
         // player 1 places a piece
-        const firstPlaySpace = orbito.findSpaceById(13);
-        orbito.play({ toSpace: firstPlaySpace });
+        orbito.play({ toSpace: orbito.findSpaceById(13) });
 
         // player 2 moves the piece
-        const movePlaySpace = orbito.findSpaceById(14);
-        orbito.play({ fromSpace: firstPlaySpace, toSpace: movePlaySpace });
+        orbito.play({
+          fromSpace: orbito.findSpaceById(14),
+          toSpace: orbito.findSpaceById(15),
+        });
 
         // player 2 places a piece
-        const secondPlaySpace = orbito.findSpaceById(13);
-        orbito.play({ toSpace: secondPlaySpace });
+        orbito.play({ toSpace: orbito.findSpaceById(13) });
 
-        expect(
-          orbito.game.board.findSpaceById(secondPlaySpace.id).piece,
-        ).toEqual({
+        expect(orbito.game.board.findSpaceById(14).piece).toEqual({
           player: orbito.players[1],
         });
       });
@@ -50,27 +49,25 @@ describe("Orbito Game", () => {
         const orbito = new Orbito();
 
         // player 1 places a piece
-        const firstPlaySpace = orbito.findSpaceById(13);
-        orbito.play({ toSpace: firstPlaySpace });
+        orbito.play({ toSpace: orbito.findSpaceById(13) });
 
         // player 2 moves the piece
-        // 13 16 -> 16 15
-        // 14 15 -> 13 14
-        // 13 should not be able to move to 15
-        const movePlaySpace = orbito.findSpaceById(15);
+        // 13 14
+        // 16 15
+        // 14 should not be able to move to 16
         const response = orbito.play({
-          fromSpace: firstPlaySpace,
-          toSpace: movePlaySpace,
+          fromSpace: orbito.findSpaceById(14),
+          toSpace: orbito.findSpaceById(16),
         });
 
         expect(response).toEqual({
           fault: "You can only move to an adjacent space",
           nextToPlay: orbito.players[1],
         });
-        expect(orbito.findSpaceById(firstPlaySpace.id).piece).toEqual({
+        expect(orbito.findSpaceById(14).piece).toEqual({
           player: orbito.players[0],
         });
-        expect(orbito.findSpaceById(movePlaySpace.id).piece).toEqual(null);
+        expect(orbito.findSpaceById(16).piece).toEqual(null);
       });
 
       it("waits on players turn until it makes a valid move", () => {
@@ -96,18 +93,18 @@ describe("Orbito Game", () => {
         const orbito = new Orbito();
 
         // player 1 places a piece
-        const firstPlaySpace = orbito.findSpaceById(13);
-        orbito.play({ toSpace: firstPlaySpace });
+        orbito.play({ toSpace: orbito.findSpaceById(13) });
 
         // player 2 moves the piece
-        const movePlaySpace = orbito.findSpaceById(14);
-        orbito.play({ fromSpace: firstPlaySpace, toSpace: movePlaySpace });
+        orbito.play({
+          fromSpace: orbito.findSpaceById(14),
+          toSpace: orbito.findSpaceById(15),
+        });
 
         // player 2 tries to move the piece again
-        const secondMovePlaySpace = orbito.findSpaceById(15);
         const response = orbito.play({
-          fromSpace: movePlaySpace,
-          toSpace: secondMovePlaySpace,
+          fromSpace: orbito.findSpaceById(15),
+          toSpace: orbito.findSpaceById(16),
         });
 
         expect(response).toEqual({
@@ -115,9 +112,7 @@ describe("Orbito Game", () => {
           nextToPlay: orbito.players[1],
         });
         expect(orbito.currentPlayer).toEqual(orbito.players[1]);
-        expect(orbito.findSpaceById(secondMovePlaySpace.id).piece).toEqual(
-          null,
-        );
+        expect(orbito.findSpaceById(16).piece).toEqual(null);
       });
 
       it("finishes players turn and orbits by placing a piece to anywhere disoccupied in the board", () => {
@@ -137,10 +132,10 @@ describe("Orbito Game", () => {
 
         expect(orbito.currentPlayer).toEqual(orbito.players[1]);
         expect(orbito.game.board.innerOrbit).toEqual([
-          { id: 13, position: 3, piece: { player: orbito.players[0] } },
-          { id: 14, position: 0, piece: null },
-          { id: 15, position: 1, piece: null },
-          { id: 16, position: 2, piece: null },
+          { id: 13, position: 0, piece: null },
+          { id: 14, position: 1, piece: { player: orbito.players[0] } },
+          { id: 15, position: 2, piece: null },
+          { id: 16, position: 3, piece: null },
         ]);
       });
     });
@@ -150,25 +145,40 @@ describe("Orbito Game", () => {
         const orbito = new Orbito();
 
         // player 1 places a piece
-        const firstPlaySpace = orbito.findSpaceById(13);
-        orbito.play({ toSpace: firstPlaySpace });
+        orbito.play({ toSpace: orbito.findSpaceById(13) });
 
         // player 2 places a piece
-        const secondPlaySpace = orbito.findSpaceById(14);
-        orbito.play({ toSpace: secondPlaySpace });
+        orbito.play({ toSpace: orbito.findSpaceById(15) });
 
-        expect(
-          orbito.game.board.findSpaceById(secondPlaySpace.id).piece,
-        ).toEqual({
+        expect(orbito.game.board.findSpaceById(15).piece).toEqual({
+          player: orbito.players[0],
+        });
+        expect(orbito.game.board.findSpaceById(16).piece).toEqual({
           player: orbito.players[1],
         });
       });
-      it("does not allow to place a piece to an occupied space", () => {});
-      it("does not allow a move play", () => {});
+
+      it("does not allow to place a piece to an occupied space", () => {
+        const orbito = new Orbito();
+
+        // player 1 places a piece
+        orbito.play({ toSpace: orbito.findSpaceById(13) });
+
+        // player 2 tries to place a piece
+        const response = orbito.play({ toSpace: orbito.findSpaceById(14) });
+
+        expect(response).toEqual({
+          fault: "Space is occupied",
+          nextToPlay: orbito.players[1],
+        });
+        expect(orbito.game.board.findSpaceById(14).piece).toEqual({
+          player: orbito.players[0],
+        });
+      });
     });
   });
 
-  describe.skip("Game End", () => {
+  describe("Game End", () => {
     describe("checks for 4 aligned pieces of the same color", () => {
       it("checks horizontally", () => {
         const orbito = new Orbito();
@@ -229,14 +239,90 @@ describe("Orbito Game", () => {
     });
 
     describe("when there is a draw", () => {
-      it("draws if the two players have 4 aligned pieces of the same color", () => {});
+      it("draws if the two players have 4 aligned pieces of the same color", () => {
+        const orbito = new Orbito();
 
-      it("shifts all the pieces 5 times", () => {});
+        // sets pieces to be aligned horizontally after orbit
+        // x x b b     a x x b
+        // a x x b ==\ a x x b
+        // a x x b ==/ a x x b
+        // a a x x     a x x b
 
-      describe("after shifting 5 times", () => {
-        it("can have a winner", () => {});
+        [12, 11, 10].forEach((id) => {
+          orbito.findSpaceById(id).piece = { player: orbito.players[0] };
+        });
+        [3, 4, 5, 6].forEach((id) => {
+          orbito.findSpaceById(id).piece = { player: orbito.players[1] };
+        });
 
-        it("can have a draw", () => {});
+        // player 1 places a piece
+        const response = orbito.play({ toSpace: orbito.findSpaceById(9) });
+
+        expect(response.winner).toEqual({ color: "draw" });
+      });
+
+      describe.skip("after all spaces are occupied", () => {
+        it("shifts all the pieces 5 times", () => {
+          const orbito = new Orbito();
+
+          [3, 5, 7, 9, 11, 13, 15].forEach((id) => {
+            orbito.findSpaceById(id).piece = { player: orbito.players[0] };
+          });
+
+          [2, 4, 6, 8, 10, 12, 14, 16].forEach((id) => {
+            orbito.findSpaceById(id).piece = { player: orbito.players[1] };
+          });
+
+          // player 1 places a piece
+          const response = orbito.play({ toSpace: orbito.findSpaceById(1) });
+
+          const spy = jest.spyOn(orbito.game, "orbit");
+
+          expect(spy).toHaveBeenCalledTimes(5);
+          expect(response.winner).toEqual({ color: "draw" });
+        });
+      });
+
+      // need to arrange piece distribution to achieve the desired result
+      describe.skip("after shifting 5 times", () => {
+        it("can have a winner", () => {
+          const orbito = new Orbito();
+
+          [3, 5, 7, 9, 11, 13, 15].forEach((id) => {
+            orbito.findSpaceById(id).piece = { player: orbito.players[0] };
+          });
+          [2, 4, 6, 8, 10, 12, 14, 16].forEach((id) => {
+            orbito.findSpaceById(id).piece = { player: orbito.players[1] };
+          });
+
+          // player 1 places a piece
+          const response = orbito.play({ toSpace: orbito.findSpaceById(1) });
+
+          const spy = jest.spyOn(orbito.game, "orbit");
+
+          expect(spy).toHaveBeenCalledTimes(5);
+          expect(response.winner).toEqual({ color: "draw" });
+        });
+
+        it("can have a draw", () => {
+          const orbito = new Orbito();
+
+          [3, 5, 7, 9, 11, 13, 15].forEach((id) => {
+            orbito.findSpaceById(id).piece = { player: orbito.players[0] };
+          });
+
+          [2, 4, 6, 8, 10, 12, 14, 16].forEach((id) => {
+            orbito.findSpaceById(id).piece = { player: orbito.players[1] };
+          });
+
+          // player 1 places a piece
+          const response = orbito.play({ toSpace: orbito.findSpaceById(1) });
+
+          const spy = jest.spyOn(orbito.game, "orbit");
+
+          expect(spy).toHaveBeenCalledTimes(5);
+          expect(response.winner).toEqual({ color: "draw" });
+        });
       });
     });
   });

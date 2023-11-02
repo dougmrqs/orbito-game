@@ -52,7 +52,7 @@ describe("Board", () => {
       expect(space.position).toEqual(0);
     });
 
-    it("finds the space by the same id after orbiting", () => {
+    it("id stays at the same position after orbiting", () => {
       const newBoard = makeRunOrbit(board)();
 
       const beforeSpace = board.findSpaceById(1);
@@ -61,7 +61,7 @@ describe("Board", () => {
       expect(beforeSpace.id).toEqual(1);
       expect(beforeSpace.position).toEqual(0);
       expect(afterSpace.id).toEqual(1);
-      expect(afterSpace.position).toEqual(11);
+      expect(afterSpace.position).toEqual(0);
     });
 
     it("throws an error if space is not found", () => {

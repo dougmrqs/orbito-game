@@ -1,3 +1,5 @@
+import { resolveAdjacency } from "./adjacency-resolver";
+import { resolveWinner } from "./win-resolver";
 import { Game, Player, Space } from "./types";
 import { makeGame } from "./game";
 
@@ -7,7 +9,6 @@ type Play =
       toSpace: Space;
     }
   | {
-      fromSpace?: never;
       toSpace: Space;
     };
 
@@ -46,14 +47,21 @@ class Orbito {
 
   play(play: Play): PlayResponse {
     if (this.gamePhase === 1) {
-      return this.handlePhaseOne(play);
+      const response = this.handlePhaseOne(play);
+      if (response) {
+        return response;
+      }
     } else if (this.gamePhase === 2) {
-      return this.handlePhaseTwo(play);
+      const response = this.handlePhaseTwo(play);
+      if (response) {
+        return response;
+      }
     }
 
-    // check if game is over
-    if (this.checkWinner()) {
-      return { winner: this.currentPlayer };
+    const winnerPlayer = resolveWinner(this.game.board);
+
+    if (winnerPlayer) {
+      return { winner: winnerPlayer };
     }
 
     return { nextToPlay: this.currentPlayer };
@@ -63,7 +71,7 @@ class Orbito {
     console.log(this.game.board.innerOrbit, this.game.board.outerOrbit);
   }
 
-  private handlePhaseOne(play: Play): PlayResponse {
+  private handlePhaseOne(play: Play): PlayResponse | undefined {
     if ("fromSpace" in play) {
       const response = this.move(play);
 
@@ -71,14 +79,11 @@ class Orbito {
         return response;
       } else {
         this.gamePhase = 2;
-        return { nextToPlay: this.currentPlayer };
       }
     } else {
       const response = this.place(play);
       if ("fault" in response) {
         return response;
-      } else {
-        return { nextToPlay: this.currentPlayer };
       }
     }
   }
@@ -98,10 +103,6 @@ class Orbito {
 
     this.gamePhase = 1;
     return { nextToPlay: this.currentPlayer };
-  }
-
-  private checkWinner(): Player | null {
-    return null;
   }
 
   private move(play: Play): PlayResponse {
@@ -136,9 +137,13 @@ class Orbito {
   }
 
   private moveOpponentsPiece(play: Play) {
+    if (!("fromSpace" in play)) {
+      throw new Error("You must specify a from space");
+    }
+
     const currentPlayer = this.currentPlayer;
 
-    const currentSpace = this.game.board.findSpaceById(play.fromSpace!.id);
+    const currentSpace = this.game.board.findSpaceById(play.fromSpace.id);
 
     if (!currentSpace.piece) {
       throw new Error("There is no piece in the space");
@@ -148,7 +153,11 @@ class Orbito {
       throw new Error("You can't move your own piece");
     }
 
-    return this.game.move(play.fromSpace!, play.toSpace);
+    if (!resolveAdjacency(play.fromSpace.id, play.toSpace.id)) {
+      throw new Error("You can only move to an adjacent space");
+    }
+
+    return this.game.move(play.fromSpace, play.toSpace);
   }
 
   private placeCurrentPlayersPiece(play: Play) {

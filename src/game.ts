@@ -46,14 +46,31 @@ function makeMovePiece(board: Board) {
 
 function makeRunOrbit(board: Board) {
   function orbit(orbit: Orbit): Orbit {
-    return orbit.map((space, index) => {
-      const nextSpace = orbit[index - 1] || orbit[orbit.length - 1];
+    const newOrbit = new Array(orbit.length);
 
-      return {
-        ...space,
-        position: nextSpace.position,
-      };
-    });
+    orbit
+      .map((space, index) => {
+        const nextIndex = index + 1;
+
+        const nextSpace = orbit[nextIndex];
+
+        if (nextSpace) {
+          return {
+            ...nextSpace,
+            piece: space.piece,
+          };
+        }
+
+        return {
+          ...orbit[0],
+          piece: space.piece,
+        };
+      })
+      .forEach((space) => {
+        newOrbit[space.position] = space;
+      });
+
+    return newOrbit;
   }
 
   return function (): Board {

@@ -93,10 +93,10 @@ describe("Game actions", () => {
       const newBoard = game.orbit();
 
       expect(newBoard.innerOrbit.map((space) => space.position)).toEqual([
-        3, 0, 1, 2,
+        0, 1, 2, 3,
       ]);
       expect(newBoard.outerOrbit.map((space) => space.position)).toEqual([
-        11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
       ]);
     });
 
@@ -106,9 +106,7 @@ describe("Game actions", () => {
       const board = game.board;
       const newBoard = game.orbit();
 
-      expect(newBoard.outerOrbit.map((space) => space.position)).not.toEqual(
-        board.outerOrbit.map((space) => space.position),
-      );
+      expect(newBoard.outerOrbit).not.toBe(board.outerOrbit);
     });
 
     it('does not lose the "piece" property', () => {
@@ -120,8 +118,7 @@ describe("Game actions", () => {
 
       game.orbit();
 
-      expect(game.board.innerOrbit[0].position).toEqual(3);
-      expect(game.board.innerOrbit[0].piece).toEqual({ player });
+      expect(game.board.innerOrbit[1].piece).toEqual({ player });
     });
 
     it("carries the piece for many positions", () => {
@@ -134,8 +131,7 @@ describe("Game actions", () => {
       game.orbit();
       game.orbit();
 
-      expect(game.board.innerOrbit[0].position).toEqual(1);
-      expect(game.board.innerOrbit[0].piece).toEqual({ player });
+      expect(game.board.innerOrbit[3].piece).toEqual({ player });
     });
   });
 
@@ -151,7 +147,7 @@ describe("Game actions", () => {
       expect(game.history).toEqual([board0, board1, board2]);
       expect(game.history[0].innerOrbit[0].piece).toEqual(null);
       expect(game.history[1].innerOrbit[0].piece).toEqual({ player });
-      expect(game.history[2].innerOrbit[0].piece).toEqual({ player });
+      expect(game.history[2].innerOrbit[1].piece).toEqual({ player });
     });
   });
 });
