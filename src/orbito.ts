@@ -1,40 +1,28 @@
+import { Game, Player, Space, Play, PlayResponse } from "./types";
 import { resolveAdjacency } from "./adjacency-resolver";
 import { resolveWinner } from "./win-resolver";
-import { Game, Player, Space } from "./types";
 import { makeGame } from "./game";
 
-type Play =
-  | {
-      fromSpace: Space;
-      toSpace: Space;
-    }
-  | {
-      toSpace: Space;
-    };
-
-type PlayResponse =
-  | {
-      nextToPlay: Player;
-      fault?: string;
-      winner?: never;
-    }
-  | {
-      nextToPlay?: never;
-      fault?: never;
-      winner: Player;
-    };
+import { listenToEvents } from "./events/event-listener";
+import { makeEventEmitter } from "./events/event-emitter";
 
 class Orbito {
   game: Game;
   players: [Player, Player];
   playerToggle: 0 | 1;
   gamePhase: 1 | 2;
+  eventEmitter: ReturnType<typeof makeEventEmitter>;
 
   constructor() {
     this.game = makeGame();
     this.players = [{ color: "black" }, { color: "white" }];
     this.playerToggle = 0;
     this.gamePhase = 1;
+    this.eventEmitter = makeEventEmitter();
+
+    listenToEvents();
+
+    this.eventEmitter.start();
   }
 
   get currentPlayer() {
@@ -46,6 +34,8 @@ class Orbito {
   }
 
   play(play: Play): PlayResponse {
+    this.eventEmitter.play({ player: this.currentPlayer });
+
     if (this.gamePhase === 1) {
       const response = this.handlePhaseOne(play);
       if (response) {
@@ -58,10 +48,18 @@ class Orbito {
       }
     }
 
-    const winnerPlayer = resolveWinner(this.game.board);
+    const isBoardFull = this.checkBoardFull();
 
-    if (winnerPlayer) {
-      return { winner: winnerPlayer };
+    if (isBoardFull) {
+      for (let i = 0; i < 5; i++) {
+        this.orbit();
+      }
+    }
+
+    const winner = this.resolveWinner();
+
+    if (winner) {
+      return { winner: winner };
     }
 
     return { nextToPlay: this.currentPlayer };
@@ -69,6 +67,28 @@ class Orbito {
 
   presentBoard() {
     console.log(this.game.board.innerOrbit, this.game.board.outerOrbit);
+  }
+
+  private checkBoardFull() {
+    const isFull =
+      this.game.board.innerOrbit.every((space) => space.piece) &&
+      this.game.board.outerOrbit.every((space) => space.piece);
+
+    if (isFull) this.eventEmitter.full();
+
+    return isFull;
+  }
+
+  private resolveWinner() {
+    const winner = resolveWinner(this.game.board);
+
+    if (winner) {
+      winner.color === "draw"
+        ? this.eventEmitter.draw({ player: winner })
+        : this.eventEmitter.win({ player: winner });
+    }
+
+    return winner;
   }
 
   private handlePhaseOne(play: Play): PlayResponse | undefined {
@@ -106,6 +126,8 @@ class Orbito {
   }
 
   private move(play: Play): PlayResponse {
+    this.eventEmitter.move({ player: this.currentPlayer, play: play });
+
     try {
       this.moveOpponentsPiece(play);
 
@@ -116,6 +138,8 @@ class Orbito {
   }
 
   private place(play: Play): PlayResponse {
+    this.eventEmitter.place({ player: this.currentPlayer, play: play });
+
     try {
       this.placeCurrentPlayersPiece(play);
       this.nextPlayer();
@@ -128,6 +152,8 @@ class Orbito {
   }
 
   private orbit() {
+    this.eventEmitter.orbit();
+
     this.game.orbit();
   }
 

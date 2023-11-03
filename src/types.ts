@@ -30,4 +30,59 @@ type Space = {
 
 type Orbit = Space[];
 
-export { Game, Board, Player, Piece, Space, Orbit };
+type Play =
+  | {
+      fromSpace: Space;
+      toSpace: Space;
+    }
+  | {
+      toSpace: Space;
+    };
+
+type PlayResponse =
+  | {
+      nextToPlay: Player;
+      fault?: string;
+      winner?: never;
+    }
+  | {
+      nextToPlay?: never;
+      fault?: never;
+      winner: Player;
+    };
+
+enum EventTypes {
+  START = "START",
+  PLAY = "PLAY",
+  MOVE = "MOVE",
+  PLACE = "PLACE",
+  WIN = "WIN",
+  DRAW = "DRAW",
+  ORBIT = "ORBIT",
+  FULL = "FULL",
+}
+
+type GameEvent =
+  | {
+      player: Player;
+    }
+  | {
+      player: Player;
+      play: Play;
+    }
+  | {
+      response: PlayResponse;
+    };
+
+export {
+  Game,
+  Board,
+  Player,
+  Piece,
+  Space,
+  Orbit,
+  Play,
+  PlayResponse,
+  EventTypes,
+  GameEvent,
+};
