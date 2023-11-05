@@ -1,6 +1,6 @@
-import { Orbito } from "../src/orbito";
-import { Board, Space } from "../src/types";
-import { resolveWinner, POSSIBLE_WINS } from "../src/win-resolver";
+import { Orbito } from "../../src/orbito";
+import { Board, Space } from "../../src/types";
+import { resolveWinner, POSSIBLE_WINS } from "../../src/lib/win-resolver";
 
 describe("Win Resolver", () => {
   describe("player wins when", () => {

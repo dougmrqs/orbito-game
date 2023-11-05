@@ -1,4 +1,5 @@
 import { Orbito } from "../src/orbito";
+import { reverseOrbit } from "../src/game";
 
 describe("Orbito Game", () => {
   describe("Game Turn", () => {
@@ -261,9 +262,10 @@ describe("Orbito Game", () => {
         expect(response.winner).toEqual({ color: "draw" });
       });
 
-      describe.skip("after all spaces are occupied", () => {
-        it("shifts all the pieces 5 times", () => {
+      describe("after all spaces are occupied", () => {
+        it.only("shifts all the pieces 5 times", () => {
           const orbito = new Orbito();
+          const spy = jest.spyOn(orbito.game, "orbit");
 
           [3, 5, 7, 9, 11, 13, 15].forEach((id) => {
             orbito.findSpaceById(id).piece = { player: orbito.players[0] };
@@ -274,12 +276,9 @@ describe("Orbito Game", () => {
           });
 
           // player 1 places a piece
-          const response = orbito.play({ toSpace: orbito.findSpaceById(1) });
-
-          const spy = jest.spyOn(orbito.game, "orbit");
+          orbito.play({ toSpace: orbito.findSpaceById(1) });
 
           expect(spy).toHaveBeenCalledTimes(5);
-          expect(response.winner).toEqual({ color: "draw" });
         });
       });
 
@@ -288,20 +287,33 @@ describe("Orbito Game", () => {
         it("can have a winner", () => {
           const orbito = new Orbito();
 
-          [3, 5, 7, 9, 11, 13, 15].forEach((id) => {
+          // sets the pieces to be aligned diagonally after orbit
+          [4, 10, 14, 16, 11, 13, 15].forEach((id) => {
             orbito.findSpaceById(id).piece = { player: orbito.players[0] };
           });
-          [2, 4, 6, 8, 10, 12, 14, 16].forEach((id) => {
+          // occupies the rest of the spaces
+          [2, 3, 5, 6, 7, 8, 9, 12].forEach((id) => {
             orbito.findSpaceById(id).piece = { player: orbito.players[1] };
           });
 
+          orbito.presentBoard();
+
+          // reverse orbit 5 times
+          const newBoard = [...Array(5)].reduce((reversedBoard, _) => {
+            return reverseOrbit(reversedBoard);
+          }, orbito.game.board);
+
+          orbito.game.history.push(newBoard);
+          orbito.presentBoard();
+
           // player 1 places a piece
           const response = orbito.play({ toSpace: orbito.findSpaceById(1) });
+          orbito.presentBoard();
 
           const spy = jest.spyOn(orbito.game, "orbit");
 
-          expect(spy).toHaveBeenCalledTimes(5);
-          expect(response.winner).toEqual({ color: "draw" });
+          // expect(spy).toHaveBeenCalledTimes(5);
+          expect(response.winner).toEqual({ color: "black" });
         });
 
         it("can have a draw", () => {

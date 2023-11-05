@@ -44,6 +44,43 @@ function makeMovePiece(board: Board) {
   };
 }
 
+function reverseOrbit(board: Board): Board {
+  function orbit(orbit: Orbit): Orbit {
+    const newOrbit = new Array(orbit.length);
+
+    orbit
+      .map((space, index) => {
+        const nextIndex = index - 1 < 0 ? orbit.length - 1 : index - 1;
+
+        const nextSpace = orbit[nextIndex];
+
+        if (nextSpace) {
+          return {
+            ...nextSpace,
+            piece: space.piece,
+          };
+        }
+
+        return {
+          ...orbit[0],
+          piece: space.piece,
+        };
+      })
+      .forEach((space) => {
+        newOrbit[space.position] = space;
+      });
+
+    return newOrbit;
+  }
+
+  const { innerOrbit, outerOrbit } = board;
+
+  const newInnerOrbit = orbit(innerOrbit);
+  const newOuterOrbit = orbit(outerOrbit);
+
+  return makeBoard(newInnerOrbit, newOuterOrbit);
+}
+
 function makeRunOrbit(board: Board) {
   function orbit(orbit: Orbit): Orbit {
     const newOrbit = new Array(orbit.length);
@@ -113,4 +150,4 @@ function makeGame(): Game {
   };
 }
 
-export { makeGame, makeRunOrbit };
+export { makeGame, makeRunOrbit, reverseOrbit };

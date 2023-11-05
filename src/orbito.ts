@@ -1,9 +1,10 @@
 import { Game, Player, Space, Play, PlayResponse } from "./types";
-import { resolveAdjacency } from "./adjacency-resolver";
-import { resolveWinner } from "./win-resolver";
+import { resolveAdjacency } from "./lib/adjacency-resolver";
+import { resolveWinner } from "./lib/win-resolver";
 import { makeGame } from "./game";
 
 import { listenToEvents } from "./events/event-listener";
+import { presentBoard } from "./lib/board-presenter";
 import { makeEventEmitter } from "./events/event-emitter";
 
 class Orbito {
@@ -20,7 +21,7 @@ class Orbito {
     this.gamePhase = 1;
     this.eventEmitter = makeEventEmitter();
 
-    listenToEvents();
+    // listenToEvents();
 
     this.eventEmitter.start();
   }
@@ -66,34 +67,7 @@ class Orbito {
   }
 
   presentBoard() {
-    const innerOrbit = this.game.board.innerOrbit;
-    const outerOrbit = this.game.board.outerOrbit;
-    const row1 = [
-      outerOrbit[0].piece?.player.color,
-      outerOrbit[1].piece?.player.color,
-      outerOrbit[2].piece?.player.color,
-      outerOrbit[3].piece?.player.color,
-    ];
-    const row2 = [
-      outerOrbit[11].piece?.player.color,
-      innerOrbit[0].piece?.player.color,
-      innerOrbit[1].piece?.player.color,
-      outerOrbit[4].piece?.player.color,
-    ];
-    const row3 = [
-      outerOrbit[10].piece?.player.color,
-      innerOrbit[3].piece?.player.color,
-      innerOrbit[2].piece?.player.color,
-      outerOrbit[5].piece?.player.color,
-    ];
-    const row4 = [
-      outerOrbit[9].piece?.player.color,
-      outerOrbit[8].piece?.player.color,
-      outerOrbit[7].piece?.player.color,
-      outerOrbit[6].piece?.player.color,
-    ];
-
-    console.log(`${row1}\n${row2}\n${row3}\n${row4}`);
+    return presentBoard.call(this);
   }
 
   private checkBoardFull() {

@@ -1,4 +1,4 @@
-import { resolveAdjacency } from "../src/adjacency-resolver";
+import { resolveAdjacency } from "../../src/lib/adjacency-resolver";
 
 describe("Adjacency Resolver", () => {
   // 01 02 03 04

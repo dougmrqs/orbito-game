@@ -1,4 +1,4 @@
-import { Board, Player, Space } from "./types";
+import { Board, Player, Space } from "../types";
 
 // player must make a row of four, horizontally, vertically or diagonally:
 // 01 02 03 04

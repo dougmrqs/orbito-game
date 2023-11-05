@@ -1,4 +1,4 @@
-import { makeGame } from "../src/game";
+import { makeGame, reverseOrbit } from "../src/game";
 import { Player } from "../src/types";
 
 describe("Game actions", () => {
@@ -26,7 +26,7 @@ describe("Game actions", () => {
       game.board.innerOrbit[0].piece = { player };
 
       expect(() => game.place(player, toSpace)).toThrowError(
-        "Space is occupied",
+        "Space is occupied"
       );
     });
   });
@@ -56,7 +56,7 @@ describe("Game actions", () => {
       const toSpace = game.board.innerOrbit[1];
 
       expect(() => game.move(fromSpace, toSpace)).toThrowError(
-        "Space is empty",
+        "Space is empty"
       );
     });
 
@@ -75,7 +75,7 @@ describe("Game actions", () => {
       const toSpace = game.board.innerOrbit[1];
 
       expect(() => game.move(fromSpace, toSpace)).toThrowError(
-        "Space is occupied",
+        "Space is occupied"
       );
     });
   });
@@ -148,6 +148,24 @@ describe("Game actions", () => {
       expect(game.history[0].innerOrbit[0].piece).toEqual(null);
       expect(game.history[1].innerOrbit[0].piece).toEqual({ player });
       expect(game.history[2].innerOrbit[1].piece).toEqual({ player });
+    });
+  });
+
+  describe("reverseOrbit", () => {
+    it("carries the piece one step back in the orbit", () => {
+      const game = makeGame();
+      const player = { color: "red" };
+
+      game.board.innerOrbit[0].piece = { player };
+
+      const newBoard = reverseOrbit(game.board);
+
+      expect(newBoard.innerOrbit.map((space) => space.piece)).toEqual([
+        null,
+        null,
+        null,
+        { player },
+      ]);
     });
   });
 });
