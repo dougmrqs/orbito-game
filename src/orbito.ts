@@ -70,6 +70,11 @@ class Orbito {
     return presentBoard.call(this);
   }
 
+  orbit() {
+    this.eventEmitter.orbit();
+    this.game.orbit();
+  }
+
   private checkBoardFull() {
     const isFull =
       this.game.board.innerOrbit.every((space) => space.piece) &&
@@ -150,12 +155,6 @@ class Orbito {
     } catch (err: any) {
       return { nextToPlay: this.currentPlayer, fault: err.message };
     }
-  }
-
-  private orbit() {
-    this.eventEmitter.orbit();
-
-    this.game.orbit();
   }
 
   private nextPlayer() {

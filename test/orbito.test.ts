@@ -263,9 +263,9 @@ describe("Orbito Game", () => {
       });
 
       describe("after all spaces are occupied", () => {
-        it.only("shifts all the pieces 5 times", () => {
+        it("shifts all the pieces 5 times", () => {
           const orbito = new Orbito();
-          const spy = jest.spyOn(orbito.game, "orbit");
+          const spy = jest.spyOn(orbito, "orbit");
 
           [3, 5, 7, 9, 11, 13, 15].forEach((id) => {
             orbito.findSpaceById(id).piece = { player: orbito.players[0] };
@@ -278,7 +278,8 @@ describe("Orbito Game", () => {
           // player 1 places a piece
           orbito.play({ toSpace: orbito.findSpaceById(1) });
 
-          expect(spy).toHaveBeenCalledTimes(5);
+          // 1 for the place play, 5 for the draw resolving
+          expect(spy).toHaveBeenCalledTimes(1 + 5);
         });
       });
 

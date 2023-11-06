@@ -37,8 +37,8 @@ function presentBoard(this: Orbito) {
 
   console.log(
     `${row1.map(presentColor)}\n${row2.map(presentColor)}\n${row3.map(
-      presentColor
-    )}\n${row4.map(presentColor)}`
+      presentColor,
+    )}\n${row4.map(presentColor)}`,
   );
 }
 

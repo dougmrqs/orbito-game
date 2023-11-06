@@ -26,7 +26,7 @@ describe("Game actions", () => {
       game.board.innerOrbit[0].piece = { player };
 
       expect(() => game.place(player, toSpace)).toThrowError(
-        "Space is occupied"
+        "Space is occupied",
       );
     });
   });
@@ -56,7 +56,7 @@ describe("Game actions", () => {
       const toSpace = game.board.innerOrbit[1];
 
       expect(() => game.move(fromSpace, toSpace)).toThrowError(
-        "Space is empty"
+        "Space is empty",
       );
     });
 
@@ -75,7 +75,7 @@ describe("Game actions", () => {
       const toSpace = game.board.innerOrbit[1];
 
       expect(() => game.move(fromSpace, toSpace)).toThrowError(
-        "Space is occupied"
+        "Space is occupied",
       );
     });
   });

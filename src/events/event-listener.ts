@@ -12,13 +12,13 @@ function listenToEvents() {
 
   eventEmitter.on(EventTypes.MOVE, (gameEvent) => {
     console.log(
-      `${gameEvent.player.color} moved from ${gameEvent.play.fromSpace.id} to ${gameEvent.play.toSpace.id}`
+      `${gameEvent.player.color} moved from ${gameEvent.play.fromSpace.id} to ${gameEvent.play.toSpace.id}`,
     );
   });
 
   eventEmitter.on(EventTypes.PLACE, (gameEvent) => {
     console.log(
-      `${gameEvent.player.color} placed on ${gameEvent.play.toSpace.id}`
+      `${gameEvent.player.color} placed on ${gameEvent.play.toSpace.id}`,
     );
   });
 
