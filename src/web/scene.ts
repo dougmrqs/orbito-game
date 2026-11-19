@@ -48,10 +48,13 @@ export interface BoardView {
 
 const SPACING = 1.2;
 // a marble rests sunk into its socket, which is as wide as the marble is there
-const MARBLE_RADIUS = 0.42;
-const MARBLE_REST_Y = 0.23;
-const SOCKET_RADIUS = 0.36;
-const BUTTON_RADIUS = 0.27;
+const MARBLE_RADIUS = 0.36;
+const MARBLE_REST_Y = 0.2;
+const SOCKET_RADIUS = 0.3;
+const BUTTON_RADIUS = 0.4;
+// the button is the sun of the board: the light that casts every shadow
+const SUN_HEIGHT = 1.5;
+const SUN_INTENSITY = 5.5;
 const BOARD_SIZE = SPACING * 4 + 0.5;
 const BOARD_HEIGHT = 0.5;
 
@@ -173,8 +176,8 @@ function buildButton() {
 
   const base = new THREE.Mesh(
     new THREE.CylinderGeometry(
-      BUTTON_RADIUS + 0.06,
-      BUTTON_RADIUS + 0.08,
+      BUTTON_RADIUS + 0.05,
+      BUTTON_RADIUS + 0.07,
       0.06,
       48,
     ),
@@ -188,10 +191,11 @@ function buildButton() {
   base.receiveShadow = true;
 
   const material = new THREE.MeshStandardMaterial({
-    color: COLORS.button,
+    // mostly its own glow, so the light above does not wash its colour out
+    color: 0x6b2408,
     emissive: COLORS.button,
-    emissiveIntensity: 0.05,
-    roughness: 0.3,
+    emissiveIntensity: 0.8,
+    roughness: 0.45,
   });
   const cap = new THREE.Mesh(
     new THREE.SphereGeometry(
@@ -205,8 +209,7 @@ function buildButton() {
     ),
     material,
   );
-  cap.scale.y = 0.6;
-  cap.castShadow = true;
+  cap.scale.y = 0.7;
 
   group.add(base, cap);
 
@@ -230,15 +233,16 @@ export function createBoardView(
   const scene = new THREE.Scene();
   const pmrem = new THREE.PMREMGenerator(renderer);
   scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-  scene.environmentIntensity = 0.7;
+  scene.environmentIntensity = 0.6;
 
-  const sun = new THREE.DirectionalLight(0xffffff, 1.8);
-  sun.position.set(3.5, 7, 3);
+  const sun = new THREE.PointLight(0xffd2ad, SUN_INTENSITY, 0, 1);
+  sun.position.set(0, SUN_HEIGHT, 0);
   sun.castShadow = true;
-  sun.shadow.mapSize.set(2048, 2048);
-  sun.shadow.camera.left = sun.shadow.camera.bottom = -4;
-  sun.shadow.camera.right = sun.shadow.camera.top = 4;
-  sun.shadow.bias = -0.0005;
+  sun.shadow.mapSize.set(1024, 1024);
+  sun.shadow.camera.near = 0.1;
+  sun.shadow.camera.far = 12;
+  sun.shadow.bias = -0.002;
+  sun.shadow.radius = 4;
   scene.add(sun);
 
   const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 100);
@@ -333,7 +337,8 @@ export function createBoardView(
     });
 
     const pulse = 0.5 + 0.5 * Math.sin(now / 260);
-    button.material.emissiveIntensity = buttonArmed ? 0.25 + 0.6 * pulse : 0.05;
+    button.material.emissiveIntensity = buttonArmed ? 0.75 + 0.5 * pulse : 0.8;
+    sun.intensity = SUN_INTENSITY * (buttonArmed ? 0.9 + 0.25 * pulse : 1);
     glow.opacity = 0.55 + 0.35 * pulse;
 
     const press = Math.min((now - buttonPressedAt) / 220, 1);
@@ -423,7 +428,7 @@ export function createBoardView(
 
       if (!raycaster.ray.intersectPlane(pickPlane, point)) return null;
 
-      if (Math.hypot(point.x, point.z) <= BUTTON_RADIUS + 0.08) {
+      if (Math.hypot(point.x, point.z) <= BUTTON_RADIUS + 0.03) {
         return { kind: "button" };
       }
 
