@@ -130,3 +130,81 @@ button:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
+
+.flash {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: 0 16px;
+  pointer-events: none;
+  opacity: 0;
+  text-align: center;
+  font-size: clamp(2.4rem, 9vw, 5.5rem);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #fff;
+  text-shadow:
+    0 0 18px rgba(127, 214, 255, 0.8),
+    0 2px 30px rgba(0, 0, 0, 0.9);
+}
+
+.flash[data-tone="win"] {
+  color: #ffe2a3;
+  text-shadow:
+    0 0 22px rgba(255, 194, 77, 0.95),
+    0 2px 30px rgba(0, 0, 0, 0.9);
+}
+
+.flash[data-tone="turn"] {
+  font-size: clamp(1.6rem, 5vw, 2.8rem);
+  font-weight: 700;
+}
+
+.flash.flashing[data-tone="turn"] {
+  animation-duration: 0.9s;
+}
+
+.flash.flashing {
+  animation: flash 1.3s ease-out both;
+}
+
+.flash.flashing[data-tone="win"] {
+  animation-duration: 2.4s;
+}
+
+@keyframes flash {
+  0% {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  15% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+  25% {
+    transform: scale(1);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.12);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @keyframes flash {
+    0%,
+    100% {
+      opacity: 0;
+    }
+    15%,
+    60% {
+      opacity: 1;
+    }
+  }
+}

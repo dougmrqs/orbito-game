@@ -28,6 +28,8 @@ export interface Highlights {
   targets: readonly SpaceId[];
   /** Whether the button is waiting to be pressed. */
   buttonArmed: boolean;
+  /** Spaces whose marbles glow, such as a winning line. */
+  glowing: readonly SpaceId[];
 }
 
 export interface BoardViewOptions {
@@ -67,10 +69,12 @@ const COLORS = {
   inlay: 0xb8934e,
   button: 0xe2622b,
   highlight: 0x7fd6ff,
+  win: 0xffc24d,
 };
 
 interface MarbleView {
   mesh: THREE.Mesh;
+  owner: string;
   spaceId: SpaceId;
   from: THREE.Vector3;
   to: THREE.Vector3;
@@ -299,6 +303,33 @@ export function createBoardView(
     }),
   );
 
+  // the glow of a winning line: a halo under each marble, and the marbles
+  // themselves lighting up
+  const halo = new THREE.MeshBasicMaterial({
+    color: COLORS.win,
+    transparent: true,
+    opacity: 0.9,
+  });
+  const haloGeometry = new THREE.TorusGeometry(
+    MARBLE_RADIUS + 0.07,
+    0.045,
+    12,
+    64,
+  ).rotateX(Math.PI / 2);
+  const halos = new Map<SpaceId, THREE.Mesh>(
+    SPACE_IDS.map((id) => {
+      const ring = new THREE.Mesh(haloGeometry, halo);
+      ring.position.copy(spacePosition(id, 0.03));
+      ring.visible = false;
+      scene.add(ring);
+
+      return [id, ring];
+    }),
+  );
+  const glowingMaterials = new Map<string, THREE.MeshPhysicalMaterial>();
+  let glowing: readonly SpaceId[] = [];
+  let glowingFrom = 0;
+
   // marbles
   const marbleGeometry = new THREE.SphereGeometry(MARBLE_RADIUS, 48, 32);
   const marbleMaterials = new Map<string, THREE.Material>();
@@ -315,6 +346,18 @@ export function createBoardView(
         clearcoatRoughness: 0.08,
       });
       marbleMaterials.set(owner, material);
+    }
+
+    return material;
+  }
+
+  function glowingMaterial(owner: string): THREE.MeshPhysicalMaterial {
+    let material = glowingMaterials.get(owner);
+
+    if (!material) {
+      material = (marbleMaterial(owner) as THREE.MeshPhysicalMaterial).clone();
+      material.emissive.set(COLORS.win);
+      glowingMaterials.set(owner, material);
     }
 
     return material;
@@ -346,6 +389,22 @@ export function createBoardView(
     });
 
     const pulse = 0.5 + 0.5 * Math.sin(now / 260);
+
+    // the glow waits for the marbles to settle into their line
+    const lit = now >= glowingFrom;
+    marbles.forEach((marble) => {
+      marble.mesh.material =
+        lit && glowing.includes(marble.spaceId)
+          ? glowingMaterial(marble.owner)
+          : marbleMaterial(marble.owner);
+    });
+    halos.forEach((ring, id) => {
+      ring.visible = lit && glowing.includes(id);
+    });
+    halo.opacity = 0.6 + 0.4 * pulse;
+    glowingMaterials.forEach((material) => {
+      material.emissiveIntensity = 0.06 + 0.14 * pulse;
+    });
     button.material.emissiveIntensity = buttonArmed ? 0.75 + 0.5 * pulse : 0.8;
     sun.intensity = SUN_INTENSITY * (buttonArmed ? 0.9 + 0.25 * pulse : 1);
     glow.opacity = 0.55 + 0.35 * pulse;
@@ -385,6 +444,7 @@ export function createBoardView(
           scene.add(mesh);
           marbles.set(marble.id, {
             mesh,
+            owner: marble.owner,
             spaceId,
             from,
             to,
@@ -415,6 +475,11 @@ export function createBoardView(
     setHighlights(highlights) {
       buttonArmed = highlights.buttonArmed;
       selection.visible = highlights.selected !== null;
+
+      if (highlights.glowing.join() !== glowing.join()) {
+        glowing = [...highlights.glowing];
+        glowingFrom = performance.now() + (reducedMotion ? 0 : 450);
+      }
 
       if (highlights.selected !== null) {
         selection.position.copy(spacePosition(highlights.selected, 0.03));

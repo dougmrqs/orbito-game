@@ -15,12 +15,13 @@ import {
   ORBIT_DIRECTION,
   PlayerId,
   RuleViolation,
+  completedLines,
   createGame,
   moveOpponentMarble,
   placeMarble,
   pressOrbit,
 } from "../rules";
-import { createHud } from "./hud";
+import { announcement, createHud } from "./hud";
 import { Pick, createBoardView } from "./scene";
 import { loadGame, saveGame } from "./storage";
 
@@ -43,6 +44,8 @@ let game = loadGame() ?? createGame();
 /** The opponent's marble picked up to be moved, if any. */
 let selected: SpaceId | null = null;
 let message = "";
+/** The game as last drawn, to tell what changed since. */
+let shown = game;
 
 function render({ animate = true } = {}) {
   const targets =
@@ -57,8 +60,14 @@ function render({ animate = true } = {}) {
     selected,
     targets,
     buttonArmed: game.phase === "orbit",
+    glowing: game.outcome ? completedLines(game.board).flat() : [],
   });
   hud.render(game, message);
+
+  const news = announcement(shown, game);
+  if (news) hud.flash(news);
+  shown = game;
+
   saveGame(game);
 }
 
