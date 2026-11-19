@@ -22,6 +22,7 @@ import {
 } from "../rules";
 import { createHud } from "./hud";
 import { Pick, createBoardView } from "./scene";
+import { loadGame, saveGame } from "./storage";
 
 const MARBLE_COLORS: Record<PlayerId, number> = {
   black: 0x17171c,
@@ -38,7 +39,7 @@ const hud = createHud({
   white: `#${MARBLE_COLORS.white.toString(16)}`,
 });
 
-let game = createGame();
+let game = loadGame() ?? createGame();
 /** The opponent's marble picked up to be moved, if any. */
 let selected: SpaceId | null = null;
 let message = "";
@@ -58,6 +59,7 @@ function render({ animate = true } = {}) {
     buttonArmed: game.phase === "orbit",
   });
   hud.render(game, message);
+  saveGame(game);
 }
 
 /** Applies a rules action; a refused action only leaves a message. */
