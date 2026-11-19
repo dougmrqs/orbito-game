@@ -47,9 +47,10 @@ export interface BoardView {
 }
 
 const SPACING = 1.2;
-const MARBLE_RADIUS = 0.36;
-const MARBLE_REST_Y = MARBLE_RADIUS * 0.8;
-const SOCKET_RADIUS = 0.44;
+// a marble rests sunk into its socket, which is as wide as the marble is there
+const MARBLE_RADIUS = 0.42;
+const MARBLE_REST_Y = 0.23;
+const SOCKET_RADIUS = 0.36;
 const BUTTON_RADIUS = 0.27;
 const BOARD_SIZE = SPACING * 4 + 0.5;
 const BOARD_HEIGHT = 0.5;
@@ -231,7 +232,7 @@ export function createBoardView(
   scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
   scene.environmentIntensity = 0.7;
 
-  const sun = new THREE.DirectionalLight(0xffffff, 2.2);
+  const sun = new THREE.DirectionalLight(0xffffff, 1.8);
   sun.position.set(3.5, 7, 3);
   sun.castShadow = true;
   sun.shadow.mapSize.set(2048, 2048);
@@ -262,7 +263,7 @@ export function createBoardView(
     opacity: 0.9,
   });
   const selection = new THREE.Mesh(
-    new THREE.TorusGeometry(SOCKET_RADIUS + 0.02, 0.03, 12, 64).rotateX(
+    new THREE.TorusGeometry(MARBLE_RADIUS + 0.08, 0.03, 12, 64).rotateX(
       Math.PI / 2,
     ),
     glow,

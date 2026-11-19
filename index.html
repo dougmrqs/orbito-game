@@ -9,6 +9,19 @@
   <body>
     <main id="stage" aria-label="Game board"></main>
 
+    <header class="hud">
+      <p id="turn" class="turn">
+        <span class="dot"></span><span id="turn-text"></span>
+      </p>
+      <p id="hint"></p>
+      <p id="message" role="status" aria-live="polite"></p>
+    </header>
+
+    <footer class="bar">
+      <span id="reserves"></span>
+      <button id="new-game" type="button">New game</button>
+    </footer>
+
     <script type="module" src="/src/web/main.ts"></script>
   </body>
 </html>
