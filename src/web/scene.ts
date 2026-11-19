@@ -49,9 +49,11 @@ export interface BoardView {
 }
 
 const SPACING = 1.2;
-// the inner orbit is pushed out a little from the grid, to sit midway between
-// the button and the outer orbit
-const INNER_SPREAD = 1.3;
+// where the four rows and columns sit: the two middle ones are pushed out from
+// an even grid, so the inner orbit lies midway between the button and the outer
+// orbit while every row and column stays a straight line
+const MIDDLE = SPACING * 0.65;
+const AXIS = [-SPACING * 1.5, -MIDDLE, MIDDLE, SPACING * 1.5];
 // a marble rests sunk into its socket, which is as wide as the marble is there
 const MARBLE_RADIUS = 0.36;
 const MARBLE_REST_Y = 0.2;
@@ -84,14 +86,9 @@ interface MarbleView {
 }
 
 function spacePosition(id: SpaceId, y = 0): THREE.Vector3 {
-  const { row, col, orbit } = getSpace(id);
-  const spread = orbit === "inner" ? INNER_SPREAD : 1;
+  const { row, col } = getSpace(id);
 
-  return new THREE.Vector3(
-    (col - 1.5) * SPACING * spread,
-    y,
-    (row - 1.5) * SPACING * spread,
-  );
+  return new THREE.Vector3(AXIS[col], y, AXIS[row]);
 }
 
 function easeInOut(t: number): number {
@@ -311,8 +308,8 @@ export function createBoardView(
     opacity: 0.9,
   });
   const haloGeometry = new THREE.TorusGeometry(
-    MARBLE_RADIUS + 0.07,
-    0.045,
+    MARBLE_RADIUS + 0.05,
+    0.035,
     12,
     64,
   ).rotateX(Math.PI / 2);
@@ -403,7 +400,7 @@ export function createBoardView(
     });
     halo.opacity = 0.6 + 0.4 * pulse;
     glowingMaterials.forEach((material) => {
-      material.emissiveIntensity = 0.06 + 0.14 * pulse;
+      material.emissiveIntensity = 0.02 + 0.07 * pulse;
     });
     button.material.emissiveIntensity = buttonArmed ? 0.75 + 0.5 * pulse : 0.8;
     sun.intensity = SUN_INTENSITY * (buttonArmed ? 0.9 + 0.25 * pulse : 1);
