@@ -208,10 +208,9 @@ describe("Game", () => {
     it("allows nothing once the game is over", () => {
       const game = pressOrbit(aboutToOrbit(["bbb.", "b...", "....", "...."]));
 
-      expect(() => placeMarble(game, 16)).toThrow(
-        "You can't place a marble now",
-      );
-      expect(() => pressOrbit(game)).toThrow();
+      expect(() => moveOpponentMarble(game, 1, 12)).toThrow("The game is over");
+      expect(() => placeMarble(game, 16)).toThrow("The game is over");
+      expect(() => pressOrbit(game)).toThrow("The game is over");
     });
 
     describe("after all spaces are occupied", () => {

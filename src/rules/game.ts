@@ -63,11 +63,19 @@ export function opponentOf(player: PlayerId): PlayerId {
   return player === "black" ? "white" : "black";
 }
 
+function assertInProgress(state: GameState): void {
+  if (state.phase === "over") {
+    throw new RuleViolation("The game is over");
+  }
+}
+
 export function moveOpponentMarble(
   state: GameState,
   from: SpaceId,
   to: SpaceId,
 ): GameState {
+  assertInProgress(state);
+
   if (state.phase !== "move-or-place") {
     throw new RuleViolation("You can't move a marble now");
   }
@@ -94,6 +102,8 @@ export function moveOpponentMarble(
 }
 
 export function placeMarble(state: GameState, spaceId: SpaceId): GameState {
+  assertInProgress(state);
+
   if (state.phase !== "move-or-place" && state.phase !== "place") {
     throw new RuleViolation("You can't place a marble now");
   }
@@ -117,6 +127,8 @@ export function placeMarble(state: GameState, spaceId: SpaceId): GameState {
 }
 
 export function pressOrbit(state: GameState): GameState {
+  assertInProgress(state);
+
   if (state.phase !== "orbit") {
     throw new RuleViolation("Place a marble before pressing the button");
   }
