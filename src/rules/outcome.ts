@@ -17,10 +17,20 @@ export const WINNING_LINES: readonly (readonly SpaceId[])[] = [
   indexes.map((i) => GRID[i][GRID_SIZE - 1 - i]),
 ];
 
+/** Every line on the board that is filled by a single player's marbles. */
+export function completedLines(board: Board): (readonly SpaceId[])[] {
+  return WINNING_LINES.filter((line) => {
+    const owner = board[line[0]]?.owner;
+
+    return (
+      owner !== undefined &&
+      line.every((spaceId) => board[spaceId]?.owner === owner)
+    );
+  });
+}
+
 function hasLine(board: Board, player: PlayerId): boolean {
-  return WINNING_LINES.some((line) =>
-    line.every((spaceId) => board[spaceId]?.owner === player),
-  );
+  return completedLines(board).some((line) => board[line[0]]?.owner === player);
 }
 
 export function resolveOutcome(board: Board): Outcome | null {

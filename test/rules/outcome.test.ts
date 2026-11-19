@@ -1,5 +1,5 @@
 import { createBoard, place } from "../../src/engine";
-import { WINNING_LINES, resolveOutcome } from "../../src/rules";
+import { WINNING_LINES, completedLines, resolveOutcome } from "../../src/rules";
 import { boardFrom } from "../support/boards";
 
 describe("Outcome", () => {
@@ -39,6 +39,18 @@ describe("Outcome", () => {
     expect(
       resolveOutcome(boardFrom(["bbbw", "....", "....", "...."])),
     ).toBeNull();
+  });
+
+  it("tells which lines are complete", () => {
+    expect(completedLines(boardFrom(["bbbw", "....", "....", "...."]))).toEqual(
+      [],
+    );
+    expect(completedLines(boardFrom(["b..w", "b..w", "b..w", "bbbw"]))).toEqual(
+      [
+        [1, 12, 11, 10],
+        [4, 5, 6, 7],
+      ],
+    );
   });
 
   it("is a draw when both players have a line", () => {
