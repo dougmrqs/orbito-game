@@ -2,7 +2,7 @@
   color-scheme: dark;
   --ink: #e9edf5;
   --muted: #9aa6bd;
-  --panel: rgba(16, 22, 38, 0.72);
+  --panel: rgba(8, 12, 26, 0.72);
   --line: rgba(255, 255, 255, 0.12);
   --accent: #e2622b;
   font-family:
@@ -26,7 +26,19 @@ body {
 body {
   overflow: hidden;
   color: var(--ink);
-  background: radial-gradient(circle at 50% 35%, #2b3a5c 0%, #101626 70%);
+  background: radial-gradient(1.6px 1.6px at 12% 18%, #fff 40%, transparent 60%),
+    radial-gradient(1.6px 1.6px at 27% 72%, #cfe0ff 40%, transparent 60%),
+    radial-gradient(2.2px 2.2px at 41% 9%, #fff 40%, transparent 60%),
+    radial-gradient(1.6px 1.6px at 58% 88%, #fff 40%, transparent 60%),
+    radial-gradient(2.2px 2.2px at 73% 14%, #cfe0ff 40%, transparent 60%),
+    radial-gradient(1.6px 1.6px at 86% 61%, #fff 40%, transparent 60%),
+    radial-gradient(1.6px 1.6px at 93% 29%, #fff 40%, transparent 60%),
+    radial-gradient(1.6px 1.6px at 6% 55%, #cfe0ff 40%, transparent 60%),
+    radial-gradient(2.2px 2.2px at 18% 91%, #fff 40%, transparent 60%),
+    radial-gradient(1.6px 1.6px at 66% 38%, #fff 40%, transparent 60%),
+    radial-gradient(1.6px 1.6px at 81% 84%, #cfe0ff 40%, transparent 60%),
+    radial-gradient(1.6px 1.6px at 35% 44%, #fff 40%, transparent 60%),
+    radial-gradient(circle at 50% 45%, #0e1a3a 0%, #050814 75%);
 }
 
 #stage {
