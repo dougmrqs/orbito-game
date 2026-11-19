@@ -47,6 +47,9 @@ export interface BoardView {
 }
 
 const SPACING = 1.2;
+// the inner orbit is pushed out a little from the grid, to sit midway between
+// the button and the outer orbit
+const INNER_SPREAD = 1.3;
 // a marble rests sunk into its socket, which is as wide as the marble is there
 const MARBLE_RADIUS = 0.36;
 const MARBLE_REST_Y = 0.2;
@@ -77,9 +80,14 @@ interface MarbleView {
 }
 
 function spacePosition(id: SpaceId, y = 0): THREE.Vector3 {
-  const { row, col } = getSpace(id);
+  const { row, col, orbit } = getSpace(id);
+  const spread = orbit === "inner" ? INNER_SPREAD : 1;
 
-  return new THREE.Vector3((col - 1.5) * SPACING, y, (row - 1.5) * SPACING);
+  return new THREE.Vector3(
+    (col - 1.5) * SPACING * spread,
+    y,
+    (row - 1.5) * SPACING * spread,
+  );
 }
 
 function easeInOut(t: number): number {
@@ -154,6 +162,7 @@ function buildBoard(direction: Direction): THREE.Group {
     const track = flat(trackGeometry, inlay, 1);
     track.position.add(middle);
     track.rotation.y = heading;
+    track.scale.x = here.distanceTo(there) / SPACING;
 
     const arrow = flat(arrowGeometry, inlay, 2);
     arrow.position.add(middle);
