@@ -1,10 +1,13 @@
 {
   "name": "orbito-game",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "A two-player marble game on an orbiting 4x4 board, played in the browser.",
   "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
     "test": "jest",
+    "typecheck": "tsc --noEmit",
     "lint": "npx prettier . --write"
   },
   "keywords": [],
@@ -12,9 +15,17 @@
   "license": "ISC",
   "devDependencies": {
     "@types/jest": "^29.5.6",
+    "@types/three": "^0.187.0",
     "jest": "29.7.0",
     "prettier": "3.0.3",
     "ts-jest": "^29.1.1",
-    "typescript": "5.2.2"
+    "typescript": "5.2.2",
+    "vite": "^8.3.8"
+  },
+  "dependencies": {
+    "three": "^0.187.0"
+  },
+  "engines": {
+    "node": ">=22.12"
   }
 }
