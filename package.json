@@ -2,6 +2,7 @@
   "name": "marble-orbit",
   "version": "1.0.0",
   "description": "A two-player marble game on an orbiting 4x4 board, played in the browser.",
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
