@@ -1,5 +1,5 @@
 {
-  "name": "orbito-game",
+  "name": "marble-orbit",
   "version": "1.0.0",
   "description": "A two-player marble game on an orbiting 4x4 board, played in the browser.",
   "scripts": {
