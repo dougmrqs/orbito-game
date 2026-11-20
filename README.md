@@ -31,6 +31,12 @@ npm run build    # static page in dist/
 npm run preview  # serve dist/ locally
 ```
 
+## Publishing
+
+Every push to `main` runs the tests, builds the page and publishes `dist/` to
+GitHub Pages (`.github/workflows/pages.yml`). The repository's Pages source
+must be set to "GitHub Actions" in its settings.
+
 ## How the code is split
 
 ```
