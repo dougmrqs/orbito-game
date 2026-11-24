@@ -1,0 +1,210 @@
+:root {
+  color-scheme: dark;
+  --ink: #e9edf5;
+  --muted: #9aa6bd;
+  --panel: rgba(8, 12, 26, 0.72);
+  --line: rgba(255, 255, 255, 0.12);
+  --accent: #e2622b;
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  overflow: hidden;
+  color: var(--ink);
+  background: radial-gradient(1.6px 1.6px at 12% 18%, #fff 40%, transparent 60%),
+    radial-gradient(1.6px 1.6px at 27% 72%, #cfe0ff 40%, transparent 60%),
+    radial-gradient(2.2px 2.2px at 41% 9%, #fff 40%, transparent 60%),
+    radial-gradient(1.6px 1.6px at 58% 88%, #fff 40%, transparent 60%),
+    radial-gradient(2.2px 2.2px at 73% 14%, #cfe0ff 40%, transparent 60%),
+    radial-gradient(1.6px 1.6px at 86% 61%, #fff 40%, transparent 60%),
+    radial-gradient(1.6px 1.6px at 93% 29%, #fff 40%, transparent 60%),
+    radial-gradient(1.6px 1.6px at 6% 55%, #cfe0ff 40%, transparent 60%),
+    radial-gradient(2.2px 2.2px at 18% 91%, #fff 40%, transparent 60%),
+    radial-gradient(1.6px 1.6px at 66% 38%, #fff 40%, transparent 60%),
+    radial-gradient(1.6px 1.6px at 81% 84%, #cfe0ff 40%, transparent 60%),
+    radial-gradient(1.6px 1.6px at 35% 44%, #fff 40%, transparent 60%),
+    radial-gradient(circle at 50% 45%, #0e1a3a 0%, #050814 75%);
+}
+
+#stage {
+  position: fixed;
+  inset: 0;
+  touch-action: none;
+}
+
+#stage canvas {
+  display: block;
+}
+
+.hud,
+.bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  display: flex;
+  padding: 16px;
+  pointer-events: none;
+}
+
+.hud {
+  top: 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+
+.hud p {
+  margin: 0;
+}
+
+.turn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel);
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: var(--dot, transparent);
+}
+
+#hint {
+  color: var(--muted);
+}
+
+#message {
+  min-height: 1.4em;
+  color: #ffb199;
+}
+
+.bar {
+  bottom: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+button {
+  pointer-events: auto;
+  padding: 8px 16px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink);
+  background: var(--panel);
+  font: inherit;
+  cursor: pointer;
+}
+
+button:hover {
+  border-color: var(--accent);
+}
+
+button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.flash {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: 0 16px;
+  pointer-events: none;
+  opacity: 0;
+  text-align: center;
+  font-size: clamp(2.4rem, 9vw, 5.5rem);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #fff;
+  text-shadow:
+    0 0 18px rgba(127, 214, 255, 0.8),
+    0 2px 30px rgba(0, 0, 0, 0.9);
+}
+
+.flash[data-tone="win"] {
+  color: #ffe2a3;
+  text-shadow:
+    0 0 22px rgba(255, 194, 77, 0.95),
+    0 2px 30px rgba(0, 0, 0, 0.9);
+}
+
+.flash[data-tone="turn"] {
+  font-size: clamp(1.6rem, 5vw, 2.8rem);
+  font-weight: 700;
+}
+
+.flash.flashing[data-tone="turn"] {
+  animation-duration: 0.9s;
+}
+
+.flash.flashing {
+  animation: flash 1.3s ease-out both;
+}
+
+.flash.flashing[data-tone="win"] {
+  animation-duration: 2.4s;
+}
+
+@keyframes flash {
+  0% {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  15% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+  25% {
+    transform: scale(1);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.12);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @keyframes flash {
+    0%,
+    100% {
+      opacity: 0;
+    }
+    15%,
+    60% {
+      opacity: 1;
+    }
+  }
+}
